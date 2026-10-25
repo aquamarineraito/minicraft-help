@@ -74,10 +74,25 @@ if prompt:
         with st.chat_message('assistant'):
             with st.spinner('Membaca panduan toko…'):
                 with genai.Client(api_key=key, http_options=types.HttpOptions(timeout=120000)) as client:
-                    response = client.models.generate_content(
-                        model=model.strip(), contents=contents,
-                        config=types.GenerateContentConfig(system_instruction=SYSTEM, temperature=0.2, max_output_tokens=1200))
-                answer = response.text
+                                        history = "\n\n".join(
+                        f"{m['role']}: {m['content']}" for m in conversation
+                    )
+                    response = client.interactions.create(
+                        model=model.strip(),
+                        input=SYSTEM + "\n\nCONVERSATION:\n" + history,
+                        generation_config={
+                            "max_output_tokens": 4096,
+                            "thinking_level": "low",
+                        },
+                    )
+                answer = "\n".join(
+                    part.text
+                    for step in response.steps
+                    if getattr(step, "type", "") == "model_output"
+                    for part in getattr(step, "content", [])
+                    if getattr(part, "type", "") == "text"
+                    and getattr(part, "text", None)
+                )
                 if not answer or not answer.strip():
                     raise ValueError('empty_response')
                 st.markdown(answer)
