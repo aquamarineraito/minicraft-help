@@ -73,7 +73,7 @@ if prompt:
     try:
         with st.chat_message('assistant'):
             with st.spinner('Membaca panduan toko…'):
-                with genai.Client(api_key=key, http_options=types.HttpOptions(timeout=45000)) as client:
+                with genai.Client(api_key=key, http_options=types.HttpOptions(timeout=120000)) as client:
                     response = client.models.generate_content(
                         model=model.strip(), contents=contents,
                         config=types.GenerateContentConfig(system_instruction=SYSTEM, temperature=0.2, max_output_tokens=1200))
