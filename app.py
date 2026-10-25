@@ -91,4 +91,4 @@ if prompt:
         elif code == '404':
             st.error('Model tidak ditemukan. Ganti nama model di Pengaturan sesuai model yang tersedia pada akun Anda.')
         else:
-            st.error('Jawaban belum berhasil dibuat. Periksa koneksi, API key, dan nama model, lalu coba kembali. Pertanyaan ini belum disimpan.')
+            st.error(f"Gagal: {type(exc).__name__} | HTTP: {getattr(exc, 'code', 'tidak ada')} | Respons kosong: {str(exc) == 'empty_response'}")
